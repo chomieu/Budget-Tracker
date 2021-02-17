@@ -1,20 +1,27 @@
+const indexedDB =
+  window.indexedDB ||
+  window.mozIndexedDB ||
+  window.webkitIndexedDB ||
+  window.msIndexedDB ||
+  window.shimIndexedDB;
+
 let db
 // create a new db request for a "budget" database
 const request = indexedDB.open("budget", 1)
 
-request.onupgradeneeded = function (event) {
-  db = event.target.result
+request.onupgradeneeded = ({target}) {
+  let db = target.result
   db.createObjectStore("pending", { autoIncrement: true })
 }
 
-request.onsuccess = function (event) {
-  db = event.target.result;
+request.onsuccess = ({target}) {
+  db = target.result;
   // check if app is online before reading from db
   if (navigator.onLine) { checkDatabase() }
 }
 
-request.onerror = function (event) {
-  console.log(event.target.errorCode)
+request.onerror = function ({target}) {
+  console.log(target.errorCode)
 }
 
 function saveRecord(record) {
